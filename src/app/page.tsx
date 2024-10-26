@@ -1,4 +1,5 @@
 "use client";
+import CardContainer from "@/components/CardContainer";
 import { data } from "@/db/db";
 import Image, { StaticImageData } from "next/image";
 import { ChangeEvent, useState } from "react";
@@ -28,7 +29,6 @@ export default function Home() {
     image: "",
   });
 
-  // For previewing the new image in the modal
   const [previewImage, setPreviewImage] = useState<string>("");
 
   const newImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +40,10 @@ export default function Home() {
   const addNewPokemonHandler = () => {
     if (!name || !power || !image) return;
 
-    setPokemons((prev) => [...prev, { id: `${Date.now()}`, name, power, image }]);
+    setPokemons((prev) => [
+      ...prev,
+      { id: `${Date.now()}`, name, power, image },
+    ]);
 
     setName("");
     setPower("");
@@ -72,54 +75,38 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <section className="flex flex-col gap-4 p-2">
+        <h1 className="text-2xl font-bold text-center">Pokemon Manager</h1>
         <input
           onChange={(e) => setName(e.target.value)}
-          className="border-2"
+          className="border-2 border-gray-300 p-2 rounded"
           type="text"
           placeholder="Name of Pokemon"
           value={name}
         />
         <input
           onChange={(e) => setPower(e.target.value)}
-          className="border-2"
+          className="border-2 border-gray-300 p-2 rounded"
           type="text"
           placeholder="Power of Pokemon"
           value={power}
         />
-        <input type="file" onChange={newImageHandler} />
+        <input
+          type="file"
+          onChange={newImageHandler}
+          className="border-2 border-gray-300 p-2 rounded"
+        />
         <button
           onClick={addNewPokemonHandler}
-          className="border-2 self-center p-3 bg-green-800 text-white"
+          className="self-center p-3 bg-green-600 text-white rounded hover:bg-green-700 transition"
         >
           + Create a new Pokemon
         </button>
       </section>
 
-      <section className="flex gap-3 flex-wrap justify-center">
-        {pokemons.map((pokemon) => (
-          <div key={pokemon.id} className="border-2 border-black w-60">
-            <Image
-              src={pokemon.image}
-              alt="Pokemon image"
-              width={100}
-              height={100}
-              className="w-full h-32"
-            />
-            <h2 className="text-xl font-extrabold text-center">{pokemon.name}</h2>
-            <p>Power: {pokemon.power}</p>
-            <div className="flex justify-center gap-5">
-              <button className="border-2" onClick={() => updateBtnHandler(pokemon)}>
-                Update
-              </button>
-              <button className="border-2" onClick={() => deleteHandler(pokemon.id)}>
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </section>
+      <CardContainer pokemons={pokemons} deleteHandler={deleteHandler} updateBtnHandler={updateBtnHandler} />
+      
       {showModal && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -128,7 +115,7 @@ export default function Home() {
           aria-labelledby="modal-title"
         >
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 id="modal-title" className="text-xl font-bold mb-4">
+            <h2 id="modal-title" className="text-xl font-bold mb-4 text-center">
               Update Pokemon
             </h2>
 
@@ -173,9 +160,9 @@ export default function Home() {
                   const file = e.target.files[0];
                   setUpdatePokemon({
                     ...updatePokemon,
-                    image: URL.createObjectURL(file), // Set image to new file
+                    image: URL.createObjectURL(file),
                   });
-                  setPreviewImage(URL.createObjectURL(file)); // Update preview image
+                  setPreviewImage(URL.createObjectURL(file));
                 }
               }}
               className="border-2 border-gray-300 p-2 w-full rounded"
@@ -198,13 +185,13 @@ export default function Home() {
             <div className="flex justify-between mt-4">
               <button
                 onClick={updatePokemonHandler}
-                className="border-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="border-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
               >
                 Update Pokemon
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="border-2 border-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-200"
+                className="border-2 border-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition"
               >
                 Cancel
               </button>
@@ -212,10 +199,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-
-
-
     </div>
   );
 }
